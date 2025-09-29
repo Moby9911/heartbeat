@@ -2,8 +2,9 @@ name: heartbeat
 
 on:
   schedule:
+    # 每天北京时间 09:00 和 21:00 执行 (UTC 01:00 和 13:00)
     - cron: '0 1,13 * * *'
-  workflow_dispatch:
+  workflow_dispatch:       # 手动触发按钮
 
 jobs:
   keep-green:
@@ -21,7 +22,7 @@ jobs:
       - name: Commit changes
         run: |
           git config user.name "Moby9911"
-          git config user.email "to.liuliuliu@gmail.com"
+          git config user.email "79634517+Moby9911@users.noreply.github.com"
           git add heartbeat.txt
           if git diff --staged --quiet; then
             echo "No changes"
@@ -34,5 +35,3 @@ jobs:
           REPO_TOKEN: ${{ secrets.PAT }}
         run: |
           git push https://x-access-token:${REPO_TOKEN}@github.com/${{ github.repository }} HEAD:${{ github.ref_name }}
-
-          
