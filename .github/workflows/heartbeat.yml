@@ -1,0 +1,38 @@
+name: heartbeat
+
+on:
+  schedule:
+    - cron: '0 1,13 * * *'
+  workflow_dispatch:
+
+jobs:
+  keep-green:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Make a change
+        run: |
+          echo "heartbeat: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> heartbeat.txt
+
+      - name: Commit changes
+        run: |
+          git config user.name "Moby9911"
+          git config user.email "to.liuliuliu@gmail.com"
+          git add heartbeat.txt
+          if git diff --staged --quiet; then
+            echo "No changes"
+          else
+            git commit -m "chore: heartbeat $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          fi
+
+      - name: Push with PAT
+        env:
+          REPO_TOKEN: ${{ secrets.PAT }}
+        run: |
+          git push https://x-access-token:${REPO_TOKEN}@github.com/${{ github.repository }} HEAD:${{ github.ref_name }}
+
+          
